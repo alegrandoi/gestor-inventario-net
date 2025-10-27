@@ -1,0 +1,13 @@
+{
+  "name": "gestor-inventario",
+  "private": true,
+  "workspaces": [
+    "src/Presentation/gestor-inventario-web"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace gestor-inventario-web",
+    "build": "npm run build --workspace gestor-inventario-web",
+    "lint": "npm run lint --workspace gestor-inventario-web",
+    "typecheck": "npm run typecheck --workspace gestor-inventario-web"
+  }
+}

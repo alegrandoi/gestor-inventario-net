@@ -1,0 +1,223 @@
+{
+  "metadata": {
+    "title": "Esquema relacional para Gestor de Inventario",
+    "description": "Referencia canónica de tablas y columnas para mantener alineados el backend, el frontend y la documentación.",
+    "source": "docs/documentacion.md",
+    "lastUpdated": "2024-05-14"
+  },
+  "tables": {
+    "Users": {
+      "description": "Usuarios de la plataforma con sus roles y estado.",
+      "columns": [
+        { "name": "UserId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador único del usuario." },
+        { "name": "Username", "type": "NVARCHAR(100)", "nullable": false, "description": "Nombre de usuario único." },
+        { "name": "Email", "type": "NVARCHAR(200)", "nullable": false, "description": "Correo electrónico único." },
+        { "name": "PasswordHash", "type": "NVARCHAR(500)", "nullable": false, "description": "Hash de la contraseña." },
+        { "name": "RoleId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Roles.RoleId", "description": "Rol asignado." },
+        { "name": "CreatedAt", "type": "DATETIME", "nullable": false, "description": "Fecha de creación del usuario." },
+        { "name": "IsActive", "type": "BIT", "nullable": false, "description": "Indica si el usuario está activo." }
+      ]
+    },
+    "Roles": {
+      "description": "Roles y perfiles de acceso.",
+      "columns": [
+        { "name": "RoleId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del rol." },
+        { "name": "Name", "type": "NVARCHAR(50)", "nullable": false, "description": "Nombre del rol." },
+        { "name": "Description", "type": "NVARCHAR(200)", "nullable": true, "description": "Descripción opcional." }
+      ]
+    },
+    "Categories": {
+      "description": "Categorías jerárquicas de productos.",
+      "columns": [
+        { "name": "CategoryId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la categoría." },
+        { "name": "Name", "type": "NVARCHAR(100)", "nullable": false, "description": "Nombre de la categoría." },
+        { "name": "Description", "type": "NVARCHAR(200)", "nullable": true, "description": "Descripción de la categoría." },
+        { "name": "ParentId", "type": "INT", "nullable": true, "foreignKey": true, "references": "Categories.CategoryId", "description": "Categoría padre." }
+      ]
+    },
+    "Products": {
+      "description": "Productos base disponibles en el catálogo.",
+      "columns": [
+        { "name": "ProductId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del producto." },
+        { "name": "Code", "type": "NVARCHAR(50)", "nullable": false, "description": "Código único o SKU." },
+        { "name": "Name", "type": "NVARCHAR(150)", "nullable": false, "description": "Nombre del producto." },
+        { "name": "Description", "type": "NVARCHAR(MAX)", "nullable": true, "description": "Descripción detallada." },
+        { "name": "CategoryId", "type": "INT", "nullable": true, "foreignKey": true, "references": "Categories.CategoryId", "description": "Categoría asociada." },
+        { "name": "DefaultPrice", "type": "DECIMAL(18,4)", "nullable": false, "description": "Precio base del producto." },
+        { "name": "Currency", "type": "NVARCHAR(10)", "nullable": false, "description": "Moneda del precio." },
+        { "name": "TaxRateId", "type": "INT", "nullable": true, "foreignKey": true, "references": "TaxRates.TaxRateId", "description": "Tasa de impuestos por defecto." },
+        { "name": "IsActive", "type": "BIT", "nullable": false, "description": "Disponibilidad del producto." },
+        { "name": "CreatedAt", "type": "DATETIME", "nullable": false, "description": "Fecha de creación." }
+      ]
+    },
+    "ProductImages": {
+      "description": "Imágenes asociadas a productos.",
+      "columns": [
+        { "name": "ImageId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la imagen." },
+        { "name": "ProductId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Products.ProductId", "description": "Producto relacionado." },
+        { "name": "ImageUrl", "type": "NVARCHAR(300)", "nullable": false, "description": "Ruta o URL de la imagen." },
+        { "name": "AltText", "type": "NVARCHAR(200)", "nullable": true, "description": "Texto alternativo accesible." }
+      ]
+    },
+    "Variants": {
+      "description": "Variantes de productos con atributos propios.",
+      "columns": [
+        { "name": "VariantId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la variante." },
+        { "name": "ProductId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Products.ProductId", "description": "Producto base." },
+        { "name": "Sku", "type": "NVARCHAR(50)", "nullable": false, "description": "SKU único para la variante." },
+        { "name": "Attributes", "type": "NVARCHAR(200)", "nullable": false, "description": "Pares atributo=valor." },
+        { "name": "Price", "type": "DECIMAL(18,4)", "nullable": true, "description": "Precio específico de la variante." },
+        { "name": "Barcode", "type": "NVARCHAR(50)", "nullable": true, "description": "Código de barras." }
+      ]
+    },
+    "Warehouses": {
+      "description": "Catálogo de almacenes físicos.",
+      "columns": [
+        { "name": "WarehouseId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del almacén." },
+        { "name": "Name", "type": "NVARCHAR(100)", "nullable": false, "description": "Nombre del almacén." },
+        { "name": "Address", "type": "NVARCHAR(200)", "nullable": true, "description": "Dirección del almacén." },
+        { "name": "Description", "type": "NVARCHAR(200)", "nullable": true, "description": "Notas adicionales." }
+      ]
+    },
+    "InventoryStock": {
+      "description": "Stock disponible y reservado por variante y almacén.",
+      "columns": [
+        { "name": "StockId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del registro de stock." },
+        { "name": "VariantId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Variants.VariantId", "description": "Variante asociada." },
+        { "name": "WarehouseId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Warehouses.WarehouseId", "description": "Almacén relacionado." },
+        { "name": "Quantity", "type": "DECIMAL(18,4)", "nullable": false, "description": "Cantidad disponible." },
+        { "name": "ReservedQty", "type": "DECIMAL(18,4)", "nullable": false, "description": "Cantidad reservada." },
+        { "name": "MinStockLevel", "type": "DECIMAL(18,4)", "nullable": false, "description": "Nivel mínimo aceptable." }
+      ]
+    },
+    "InventoryTransactions": {
+      "description": "Movimientos de inventario para auditoría y cálculo de stock.",
+      "columns": [
+        { "name": "TransactionId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del movimiento." },
+        { "name": "VariantId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Variants.VariantId", "description": "Variante afectada." },
+        { "name": "WarehouseId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Warehouses.WarehouseId", "description": "Almacén involucrado." },
+        { "name": "TransactionType", "type": "NVARCHAR(20)", "nullable": false, "description": "Tipo de movimiento (IN, OUT, MOVE, ADJUST)." },
+        { "name": "Quantity", "type": "DECIMAL(18,4)", "nullable": false, "description": "Cantidad desplazada." },
+        { "name": "TransactionDate", "type": "DATETIME", "nullable": false, "description": "Fecha y hora del movimiento." },
+        { "name": "ReferenceType", "type": "NVARCHAR(20)", "nullable": true, "description": "Origen del movimiento." },
+        { "name": "ReferenceId", "type": "INT", "nullable": true, "description": "Identificador de la entidad referenciada." },
+        { "name": "UserId", "type": "INT", "nullable": true, "foreignKey": true, "references": "Users.UserId", "description": "Usuario que realizó el movimiento." },
+        { "name": "Notes", "type": "NVARCHAR(200)", "nullable": true, "description": "Notas adicionales." }
+      ]
+    },
+    "Suppliers": {
+      "description": "Proveedores registrados y condiciones asociadas.",
+      "columns": [
+        { "name": "SupplierId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del proveedor." },
+        { "name": "Name", "type": "NVARCHAR(150)", "nullable": false, "description": "Nombre o razón social." },
+        { "name": "ContactName", "type": "NVARCHAR(150)", "nullable": true, "description": "Persona de contacto." },
+        { "name": "Email", "type": "NVARCHAR(200)", "nullable": true, "description": "Correo electrónico." },
+        { "name": "Phone", "type": "NVARCHAR(50)", "nullable": true, "description": "Número de teléfono." },
+        { "name": "Address", "type": "NVARCHAR(200)", "nullable": true, "description": "Dirección física." },
+        { "name": "Notes", "type": "NVARCHAR(200)", "nullable": true, "description": "Notas adicionales." }
+      ]
+    },
+    "Customers": {
+      "description": "Clientes y cuentas asociadas.",
+      "columns": [
+        { "name": "CustomerId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del cliente." },
+        { "name": "Name", "type": "NVARCHAR(150)", "nullable": false, "description": "Nombre o razón social." },
+        { "name": "Email", "type": "NVARCHAR(200)", "nullable": true, "description": "Correo electrónico." },
+        { "name": "Phone", "type": "NVARCHAR(50)", "nullable": true, "description": "Teléfono." },
+        { "name": "Address", "type": "NVARCHAR(200)", "nullable": true, "description": "Dirección." },
+        { "name": "Notes", "type": "NVARCHAR(200)", "nullable": true, "description": "Notas." }
+      ]
+    },
+    "PurchaseOrders": {
+      "description": "Pedidos de compra realizados a proveedores.",
+      "columns": [
+        { "name": "PurchaseOrderId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del pedido." },
+        { "name": "SupplierId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Suppliers.SupplierId", "description": "Proveedor asociado." },
+        { "name": "OrderDate", "type": "DATETIME", "nullable": false, "description": "Fecha del pedido." },
+        { "name": "Status", "type": "NVARCHAR(20)", "nullable": false, "description": "Estado del pedido." },
+        { "name": "TotalAmount", "type": "DECIMAL(18,4)", "nullable": false, "description": "Importe total." },
+        { "name": "Currency", "type": "NVARCHAR(10)", "nullable": false, "description": "Moneda de la operación." },
+        { "name": "Notes", "type": "NVARCHAR(200)", "nullable": true, "description": "Comentarios adicionales." }
+      ]
+    },
+    "PurchaseOrderLines": {
+      "description": "Detalle de artículos en pedidos de compra.",
+      "columns": [
+        { "name": "LineId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la línea." },
+        { "name": "PurchaseOrderId", "type": "INT", "nullable": false, "foreignKey": true, "references": "PurchaseOrders.PurchaseOrderId", "description": "Pedido asociado." },
+        { "name": "VariantId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Variants.VariantId", "description": "Variante solicitada." },
+        { "name": "Quantity", "type": "DECIMAL(18,4)", "nullable": false, "description": "Cantidad solicitada." },
+        { "name": "UnitPrice", "type": "DECIMAL(18,4)", "nullable": false, "description": "Precio unitario negociado." },
+        { "name": "Discount", "type": "DECIMAL(18,4)", "nullable": true, "description": "Descuento aplicado." },
+        { "name": "TaxRateId", "type": "INT", "nullable": true, "foreignKey": true, "references": "TaxRates.TaxRateId", "description": "Impuesto asociado." },
+        { "name": "TotalLine", "type": "DECIMAL(18,4)", "nullable": false, "description": "Importe total de la línea." }
+      ]
+    },
+    "SalesOrders": {
+      "description": "Pedidos de venta realizados por los clientes.",
+      "columns": [
+        { "name": "SalesOrderId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del pedido." },
+        { "name": "CustomerId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Customers.CustomerId", "description": "Cliente asociado." },
+        { "name": "OrderDate", "type": "DATETIME", "nullable": false, "description": "Fecha del pedido." },
+        { "name": "Status", "type": "NVARCHAR(20)", "nullable": false, "description": "Estado del pedido." },
+        { "name": "ShippingAddress", "type": "NVARCHAR(200)", "nullable": true, "description": "Dirección de envío." },
+        { "name": "TotalAmount", "type": "DECIMAL(18,4)", "nullable": false, "description": "Importe total." },
+        { "name": "Currency", "type": "NVARCHAR(10)", "nullable": false, "description": "Moneda." },
+        { "name": "Notes", "type": "NVARCHAR(200)", "nullable": true, "description": "Comentarios." }
+      ]
+    },
+    "SalesOrderLines": {
+      "description": "Detalle de líneas en pedidos de venta.",
+      "columns": [
+        { "name": "LineId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la línea." },
+        { "name": "SalesOrderId", "type": "INT", "nullable": false, "foreignKey": true, "references": "SalesOrders.SalesOrderId", "description": "Pedido relacionado." },
+        { "name": "VariantId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Variants.VariantId", "description": "Producto vendido." },
+        { "name": "Quantity", "type": "DECIMAL(18,4)", "nullable": false, "description": "Cantidad." },
+        { "name": "UnitPrice", "type": "DECIMAL(18,4)", "nullable": false, "description": "Precio unitario." },
+        { "name": "Discount", "type": "DECIMAL(18,4)", "nullable": true, "description": "Descuento aplicado." },
+        { "name": "TaxRateId", "type": "INT", "nullable": true, "foreignKey": true, "references": "TaxRates.TaxRateId", "description": "Impuesto aplicado." },
+        { "name": "TotalLine", "type": "DECIMAL(18,4)", "nullable": false, "description": "Importe total de la línea." }
+      ]
+    },
+    "PriceLists": {
+      "description": "Listas de precios diferenciadas por segmento.",
+      "columns": [
+        { "name": "PriceListId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la lista." },
+        { "name": "Name", "type": "NVARCHAR(100)", "nullable": false, "description": "Nombre de la lista." },
+        { "name": "Description", "type": "NVARCHAR(200)", "nullable": true, "description": "Descripción de la lista." },
+        { "name": "Currency", "type": "NVARCHAR(10)", "nullable": false, "description": "Moneda." }
+      ]
+    },
+    "ProductPrices": {
+      "description": "Precios específicos por variante y lista de precios.",
+      "columns": [
+        { "name": "PriceId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del registro." },
+        { "name": "PriceListId", "type": "INT", "nullable": false, "foreignKey": true, "references": "PriceLists.PriceListId", "description": "Lista asociada." },
+        { "name": "VariantId", "type": "INT", "nullable": false, "foreignKey": true, "references": "Variants.VariantId", "description": "Variante referenciada." },
+        { "name": "Price", "type": "DECIMAL(18,4)", "nullable": false, "description": "Precio definido." }
+      ]
+    },
+    "TaxRates": {
+      "description": "Tarifas de impuestos disponibles.",
+      "columns": [
+        { "name": "TaxRateId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador del impuesto." },
+        { "name": "Name", "type": "NVARCHAR(100)", "nullable": false, "description": "Nombre comercial." },
+        { "name": "Rate", "type": "DECIMAL(5,2)", "nullable": false, "description": "Porcentaje aplicado." },
+        { "name": "Region", "type": "NVARCHAR(50)", "nullable": true, "description": "Región o país." },
+        { "name": "Description", "type": "NVARCHAR(200)", "nullable": true, "description": "Notas adicionales." }
+      ]
+    },
+    "ShippingRates": {
+      "description": "Tarifas de envío disponibles para logística.",
+      "columns": [
+        { "name": "ShippingRateId", "type": "INT IDENTITY", "primaryKey": true, "nullable": false, "description": "Identificador de la tarifa." },
+        { "name": "Name", "type": "NVARCHAR(100)", "nullable": false, "description": "Nombre del método." },
+        { "name": "BaseCost", "type": "DECIMAL(18,4)", "nullable": false, "description": "Coste base." },
+        { "name": "CostPerWeight", "type": "DECIMAL(18,4)", "nullable": true, "description": "Coste adicional por peso." },
+        { "name": "CostPerDistance", "type": "DECIMAL(18,4)", "nullable": true, "description": "Coste por distancia." },
+        { "name": "Currency", "type": "NVARCHAR(10)", "nullable": false, "description": "Moneda." },
+        { "name": "Description", "type": "NVARCHAR(200)", "nullable": true, "description": "Observaciones." }
+      ]
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "title": "Gestor de Inventario - Observabilidad",
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Peticiones por código",
+      "targets": [
+        {
+          "expr": "sum by (code, route) (rate(http_server_requests_seconds_count{app=\"gestor-inventario-api\"}[5m]))",
+          "legendFormat": "{{route}} {{code}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latencia p95",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(http_server_requests_seconds_bucket{app=\"gestor-inventario-api\"}[5m])))",
+          "legendFormat": "{{route}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "EF Core duration",
+      "targets": [
+        {
+          "expr": "sum by (db_system) (rate(entityframeworkcore_query_duration_seconds_sum{app=\"gestor-inventario-api\"}[5m])) / sum by (db_system) (rate(entityframeworkcore_query_duration_seconds_count{app=\"gestor-inventario-api\"}[5m]))",
+          "legendFormat": "{{db_system}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Uso de CPU proceso",
+      "targets": [
+        {
+          "expr": "process_cpu_seconds_total{app=\"gestor-inventario-api\"}",
+          "legendFormat": "cpu"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Memoria utilizada",
+      "targets": [
+        {
+          "expr": "process_working_set_bytes{app=\"gestor-inventario-api\"}",
+          "legendFormat": "working set"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38,
+  "version": 1
+}

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTNET_ROOT="$REPO_ROOT/.dotnet"
+DOTNET_BIN="$DOTNET_ROOT/dotnet"
+
+if [[ ! -x "$DOTNET_BIN" ]]; then
+    "$REPO_ROOT/eng/install-dotnet.sh"
+fi
+
+export DOTNET_ROOT
+export DOTNET_MULTILEVEL_LOOKUP=0
+"$DOTNET_BIN" "$@"

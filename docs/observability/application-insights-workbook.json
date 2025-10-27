@@ -1,0 +1,74 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 1,
+      "content": {
+        "json": "# Supervisión del Gestor de Inventario"
+      },
+      "customWidth": "0"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "requests | where cloud_RoleName == 'GestorInventario.Api' | summarize count() , avg(duration) by bin(timestamp, 5m), resultCode",
+        "size": 1,
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart",
+        "chartSettings": {
+          "title": "Peticiones por código de respuesta",
+          "ySettings": {
+            "numberFormat": 2
+          }
+        }
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "traces | where cloud_RoleName == 'GestorInventario.Api' and severityLevel >= 3 | summarize count() by message",
+        "size": 1,
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "table",
+        "chartSettings": {
+          "title": "Errores recientes"
+        }
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "dependencies | where cloud_RoleName == 'GestorInventario.Api' and type == 'SQL' | summarize avg(duration), percentiles(duration, 50, 95, 99) by bin(timestamp, 5m)",
+        "size": 1,
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart",
+        "chartSettings": {
+          "title": "Tiempo de consultas EF Core",
+          "ySettings": {
+            "numberFormat": 2
+          }
+        }
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "performanceCounters | where cloud_RoleName == 'GestorInventario.Api' | summarize avg(cpuUsage = CounterValue) by bin(timestamp, 5m)",
+        "size": 1,
+        "queryType": 0,
+        "resourceType": "microsoft.insights/components",
+        "visualization": "linechart",
+        "chartSettings": {
+          "title": "CPU proceso dotnet"
+        }
+      }
+    }
+  ]
+}

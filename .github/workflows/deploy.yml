@@ -1,0 +1,18 @@
+name: Deploy (disabled)
+
+# This workflow is intentionally disabled because Azure deployments are not used anymore.
+# It is kept to avoid accidental reintroductions in other branches while making the intent explicit.
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+
+jobs:
+  disabled:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy disabled
+        run: |
+          echo "Azure deployment workflow disabled."

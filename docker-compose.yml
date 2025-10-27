@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: src/Presentation/GestorInventario.Api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__GestorInventario: Server=sqlserver,1433;Database=GestorInventario;User Id=sa;Password=ExamplePassword123!;TrustServerCertificate=True
+      Jwt__Key: super-secret-key-change-me
+      Jwt__Issuer: GestorInventario
+      Jwt__Audience: GestorInventarioFrontend
+      Cors__AllowedOrigins__0: http://localhost:3000
+    ports:
+      - '5000:8080'
+    depends_on:
+      - sqlserver
+
+  web:
+    build:
+      context: .
+      dockerfile: src/Presentation/gestor-inventario-web/Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://api:8080/api
+    ports:
+      - '3000:3000'
+    depends_on:
+      - api
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: ExamplePassword123!
+    ports:
+      - '1433:1433'
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+volumes:
+  sqlserver-data:
+    driver: local
