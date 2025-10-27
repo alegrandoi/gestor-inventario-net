@@ -1,6 +1,6 @@
 # Gestor de inventario
 
-Este repositorio recopila la documentación funcional y técnica necesaria para implementar una solución integral de gestión de inventario sobre .NET 8 y un frontend moderno con Next.js 14.
+Monorepo que implementa una plataforma integral de gestión de inventario con backend ASP.NET Core 8 siguiendo Clean Architecture, un panel administrativo en Next.js 14 y servicios de soporte para analítica, automatizaciones y observabilidad. Incluye la solución completa (API, capa de dominio y aplicación, workers, frontend y documentación funcional/técnica) lista para extender en escenarios empresariales.
 
 ## Contenido
 
