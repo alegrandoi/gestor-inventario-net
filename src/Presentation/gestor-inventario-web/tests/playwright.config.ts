@@ -10,6 +10,11 @@ const resolvedBaseURL =
     : fallbackBaseURL;
 const shouldStartLocalServer = resolvedBaseURL === fallbackBaseURL;
 
+const normalizedBase = resolvedBaseURL.replace(/\/$/, '');
+if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
+  process.env.NEXT_PUBLIC_API_BASE_URL = `${normalizedBase}/api`;
+}
+
 export default defineConfig({
   testDir: './specs',
   timeout: 60_000,
