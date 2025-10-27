@@ -52,7 +52,7 @@ export interface TotpActivationResultDto {
 export interface CategoryDto {
   id: number;
   name: string;
-  description?: string;
+  description?: string | null;;
   parentId?: number;
   children?: CategoryDto[];
 }
@@ -62,7 +62,7 @@ export interface TaxRateDto {
   name: string;
   rate: number;
   region?: string;
-  description?: string;
+  description?: string | null;;
 }
 
 export interface ProductAttributeValueDto {
@@ -101,23 +101,23 @@ export interface ProductDto {
   id: number;
   code: string;
   name: string;
-  description?: string;
-  categoryId?: number;
+  description?: string | null;;
+  categoryId?: number | null;;
   defaultPrice: number;
   currency: string;
-  taxRateId?: number;
+  taxRateId?: number | null;;
   appliedTaxRate?: number | null;
   finalPrice?: number | null;
   isActive: boolean;
   requiresSerialTracking: boolean;
   weightKg: number;
-  heightCm?: number;
-  widthCm?: number;
-  lengthCm?: number;
-  leadTimeDays?: number;
-  safetyStock?: number;
-  reorderPoint?: number;
-  reorderQuantity?: number;
+  heightCm?: number | null;;
+  widthCm?: number | null;;
+  lengthCm?: number | null;;
+  leadTimeDays?: number | null;;
+  safetyStock?: number | null;;
+  reorderPoint?: number | null;;
+  reorderQuantity?: number | null;;
   variants: ProductVariantDto[];
   images: ProductImageDto[];
 }
