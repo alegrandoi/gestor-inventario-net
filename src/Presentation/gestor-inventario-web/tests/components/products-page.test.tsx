@@ -1,6 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
 import ProductsPage from '../../app/(dashboard)/dashboard/products/page';
 import { apiClient } from '../../src/lib/api-client';
+import type { ProductDto } from '../../src/types/api';
 
 vi.mock('../../src/lib/api-client', () => {
   return {
@@ -20,7 +21,7 @@ const mockedApiClient = apiClient as unknown as {
   delete: ReturnType<typeof vi.fn>;
 };
 
-const baseProductPayload = {
+const baseProductPayload: ProductDto = {
   id: 1,
   code: 'SKU-001',
   name: 'Producto con IVA',
