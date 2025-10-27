@@ -195,7 +195,7 @@ test.describe('Orders dashboard', () => {
     let receiveUpdatePayload: Record<string, unknown> | null = null;
     let createdSalesOrderPayload: Record<string, unknown> | null = null;
 
-    await page.route('**/api/warehouses', async (route) => {
+    await page.route('**/api/warehouses**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -203,7 +203,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/api/salesorders', async (route) => {
+    await page.route('**/api/salesorders**', async (route) => {
       if (route.request().method() === 'GET') {
         await route.fulfill({
           status: 200,
@@ -258,7 +258,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/api/purchaseorders', async (route) => {
+    await page.route('**/api/purchaseorders**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -292,7 +292,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/api/customers', async (route) => {
+    await page.route('**/api/customers**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -300,7 +300,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/api/suppliers', async (route) => {
+    await page.route('**/api/suppliers**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -308,7 +308,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/api/products', async (route) => {
+    await page.route('**/api/products**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -321,7 +321,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/api/carriers', async (route) => {
+    await page.route('**/api/carriers**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
