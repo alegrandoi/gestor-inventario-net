@@ -292,7 +292,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/customers', async (route) => {
+    await page.route('**/api/customers', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -300,7 +300,7 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/suppliers', async (route) => {
+    await page.route('**/api/suppliers', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -308,15 +308,20 @@ test.describe('Orders dashboard', () => {
       });
     });
 
-    await page.route('**/products', async (route) => {
+    await page.route('**/api/products', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(productsCatalog)
+        body: JSON.stringify({
+          items: productsCatalog,
+          totalCount: productsCatalog.length,
+          page: 1,
+          pageSize: productsCatalog.length
+        })
       });
     });
 
-    await page.route('**/carriers', async (route) => {
+    await page.route('**/api/carriers', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
